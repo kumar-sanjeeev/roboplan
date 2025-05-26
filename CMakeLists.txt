@@ -12,6 +12,7 @@ find_package(pinocchio REQUIRED)
 
 # Add libraries
 add_library (roboplan SHARED
+    src/scene.cpp
     src/utils.cpp
 )
 target_include_directories(roboplan PRIVATE include)
@@ -78,7 +79,9 @@ install(
 )
 
 # Install the headers and targets
-install(FILES include/roboplan/utils.hpp
+install(FILES 
+            include/roboplan/scene.hpp
+            include/roboplan/utils.hpp
         DESTINATION lib/cmake/roboplan)
 
 install(EXPORT roboplan-targets

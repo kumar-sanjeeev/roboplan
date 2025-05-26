@@ -1,1 +1,1 @@
-from .roboplan import add, createPinocchioModel, __doc__
+from .roboplan import add, createPinocchioModel, Scene, __doc__
