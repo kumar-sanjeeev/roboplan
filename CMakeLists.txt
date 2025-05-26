@@ -43,7 +43,7 @@ target_link_libraries(test_pinocchio
 install(
   TARGETS
   test_pinocchio
-  DESTINATION lib
+  DESTINATION lib/roboplan
 )
 
 # TEST EXPORT
@@ -77,16 +77,26 @@ install(
         "lib/cmake/roboplan"
 )
 
+# Install the headers and targets
 install(FILES include/roboplan/utils.hpp
         DESTINATION lib/cmake/roboplan)
 
 install(EXPORT roboplan-targets
         FILE roboplanTargets.cmake
         NAMESPACE roboplan::
-        DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+        DESTINATION lib/cmake/roboplan)
 
 install(TARGETS roboplan
         EXPORT roboplan
         LIBRARY DESTINATION lib
         INCLUDES DESTINATION include
         )
+
+# If ament_cmake is detected, export the package to be visible in ROS 2. 
+find_package(ament_cmake QUIET)
+if ( ament_cmake_FOUND )
+
+    message(STATUS "ament_cmake found. Exporting for ROS 2.")
+    ament_package()
+
+endif()

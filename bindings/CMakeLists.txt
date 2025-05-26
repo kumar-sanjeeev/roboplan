@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.22)
 
-project(nanobind_example LANGUAGES CXX)
+project(roboplan_bindings LANGUAGES CXX)
 
 if (NOT SKBUILD)
   message(WARNING "\
@@ -25,16 +25,11 @@ if (NOT SKBUILD)
   after editing C++ files.")
 endif()
 
-# Try to import all Python components potentially needed by nanobind
 find_package(Python
   REQUIRED COMPONENTS Interpreter Development.Module
   OPTIONAL_COMPONENTS Development.SABIModule)
 
-# Import nanobind through CMake's find_package mechanism
 find_package(nanobind CONFIG REQUIRED)
-
-# TODO: Make this not hacky. Is this even doable?
-list(APPEND CMAKE_PREFIX_PATH "/home/sebastian/workspace/roboplan_ws/build/roboplan")
 find_package(roboplan REQUIRED)
 
 # We are now ready to compile the actual extension module

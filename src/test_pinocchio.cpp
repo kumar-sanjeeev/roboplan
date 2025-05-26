@@ -17,7 +17,7 @@ int main(int /*argc*/, char* /*argv*/ [])
 
   // Create a set of Pinocchio models and data.
   pinocchio::Model model;
-//   pinocchio::urdf::buildModel(urdf_path, model);
+  //   pinocchio::urdf::buildModel(urdf_path, model);
 
   pinocchio::GeometryModel visual_model;
 //   pinocchio::urdf::buildGeom(model, urdf_path, pinocchio::VISUAL, visual_model);
