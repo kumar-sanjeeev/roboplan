@@ -8,6 +8,7 @@
 
 #include <pinocchio/algorithm/frames.hpp>
 #include <pinocchio/algorithm/geometry.hpp>
+#include <pinocchio/algorithm/joint-configuration.hpp>
 #include <pinocchio/fwd.hpp>
 #include <pinocchio/multibody/data.hpp>
 #include <pinocchio/multibody/geometry.hpp>
@@ -96,4 +97,4 @@ private:
   JointConfiguration cur_state_;
 };
 
-} // namespace roboplan
+}  // namespace roboplan
