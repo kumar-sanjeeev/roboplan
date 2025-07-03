@@ -1,5 +1,6 @@
 #pragma once
 
+#include <iostream>
 #include <string>
 #include <vector>
 
@@ -80,6 +81,18 @@ struct JointInfo {
 
   /// @brief The joint limit information for each degree of freedom.
   JointLimits limits;
+};
+
+/// @brief Contains a path of joint configurations.
+struct JointPath {
+  /// @brief The list of joint names.
+  std::vector<std::string> joint_names;
+
+  /// @brief The list of joint configuration positions.
+  std::vector<Eigen::VectorXd> positions;
+
+  /// @brief Prints basic information about the path.
+  friend std::ostream& operator<<(std::ostream& os, const JointPath& path);
 };
 
 }  // namespace roboplan

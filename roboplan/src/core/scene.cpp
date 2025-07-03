@@ -78,6 +78,10 @@ Scene::Scene(const std::string& name, const std::filesystem::path& urdf_path,
                                   .accelerations = Eigen::VectorXd::Zero(model_.nv)};
 }
 
+double Scene::configurationDistance(const Eigen::VectorXd& q_start, const Eigen::VectorXd& q_end) {
+  return pinocchio::distance(model_, q_start, q_end);
+}
+
 void Scene::setRngSeed(unsigned int seed) { rng_gen_ = std::mt19937(seed); }
 
 Eigen::VectorXd Scene::randomPositions() {
@@ -95,6 +99,16 @@ Eigen::VectorXd Scene::randomPositions() {
   return positions;
 }
 
+std::optional<Eigen::VectorXd> Scene::randomCollisionFreePositions(size_t max_samples) {
+  for (size_t idx = 0; idx < max_samples; ++idx) {
+    const auto positions = randomPositions();
+    if (!hasCollisions(positions)) {
+      return positions;
+    }
+  }
+  return std::nullopt;
+}
+
 bool Scene::hasCollisions(const Eigen::VectorXd& q) {
   return pinocchio::computeCollisions(model_, model_data_, collision_model_, collision_model_data_,
                                       q,
@@ -104,7 +118,7 @@ bool Scene::hasCollisions(const Eigen::VectorXd& q) {
 bool Scene::hasCollisionsAlongPath(const Eigen::VectorXd& q_start, const Eigen::VectorXd& q_end,
                                    const double min_step_size) {
 
-  const auto distance = pinocchio::distance(model_, q_start, q_end);
+  const auto distance = configurationDistance(q_start, q_end);
 
   // Special case for short paths (also handles division by zero in the next case).
   const bool collision_at_endpoints = hasCollisions(q_start) || hasCollisions(q_end);
@@ -126,25 +140,26 @@ bool Scene::hasCollisionsAlongPath(const Eigen::VectorXd& q_start, const Eigen::
   return false;
 }
 
-void Scene::print() {
-  std::cout << "Scene : " << name_ << "\n";
-  std::cout << "Joint names: ";
-  for (const auto& joint_name : joint_names_) {
-    std::cout << joint_name << " ";
+std::ostream& operator<<(std::ostream& os, const Scene& scene) {
+  os << "Scene: " << scene.name_ << "\n";
+  os << "Joint names: ";
+  for (const auto& joint_name : scene.joint_names_) {
+    os << joint_name << " ";
   }
-  std::cout << "\n";
-  std::cout << "Joint limits:\n";
-  for (const auto& joint_name : joint_names_) {
-    const auto& limits = joint_info_.at(joint_name).limits;
-    std::cout << "  " << joint_name << ":\n";
-    std::cout << "    min positions: " << limits.min_position.transpose() << "\n";
-    std::cout << "    max positions: " << limits.max_position.transpose() << "\n";
-    std::cout << "    velocity: " << limits.max_velocity.transpose() << "\n";
+  os << "\n";
+  os << "Joint limits:\n";
+  for (const auto& joint_name : scene.joint_names_) {
+    const auto& limits = scene.joint_info_.at(joint_name).limits;
+    os << "  " << joint_name << ":\n";
+    os << "    min positions: " << limits.min_position.transpose() << "\n";
+    os << "    max positions: " << limits.max_position.transpose() << "\n";
+    os << "    velocity: " << limits.max_velocity.transpose() << "\n";
   }
-  std::cout << "State:\n";
-  std::cout << "  positions: " << cur_state_.positions.transpose() << "\n";
-  std::cout << "  velocities: " << cur_state_.velocities.transpose() << "\n";
-  std::cout << "  accelerations: " << cur_state_.accelerations.transpose() << "\n";
+  os << "State:\n";
+  os << "  positions: " << scene.cur_state_.positions.transpose() << "\n";
+  os << "  velocities: " << scene.cur_state_.velocities.transpose() << "\n";
+  os << "  accelerations: " << scene.cur_state_.accelerations.transpose() << "\n";
+  return os;
 }
 
 }  // namespace roboplan

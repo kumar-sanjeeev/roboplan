@@ -4,6 +4,7 @@
 #include <iostream>
 #include <map>
 #include <optional>
+#include <stdexcept>
 #include <string>
 
 #include <pinocchio/algorithm/frames.hpp>
@@ -42,6 +43,22 @@ public:
   /// @return A vector of joint names..
   std::vector<std::string> getJointNames() { return joint_names_; };
 
+  /// @brief Gets the information for a specific joint.
+  /// @param joint_name The name of the joint.
+  /// @return The joint information struct.
+  JointInfo getJointInfo(const std::string& joint_name) {
+    if (!joint_info_.contains(joint_name)) {
+      throw std::runtime_error("Joint '" + joint_name + "' is not in the scene.");
+    }
+    return joint_info_.at(joint_name);
+  }
+
+  /// @brief Gets the distance between two joint configurations.
+  /// @param q_start The starting joint positions.
+  /// @param q_end The ending joint positions.
+  /// @return The configuration-space distance between the two positions.
+  double configurationDistance(const Eigen::VectorXd& q_start, const Eigen::VectorXd& q_end);
+
   /// @brief Sets the seed for the random number generator (RNG).
   /// @param seed The seed to set.
   void setRngSeed(unsigned int seed);
@@ -49,6 +66,11 @@ public:
   /// @brief Generates random positions for the robot model.
   /// @return The random positions.
   Eigen::VectorXd randomPositions();
+
+  /// @brief Generates random collision-free positions for the robot model.
+  /// @param max_tries The maximum number of samples to attempt.
+  /// @return The random positions, if successful, else std::nullopt.
+  std::optional<Eigen::VectorXd> randomCollisionFreePositions(size_t max_samples = 1000);
 
   /// @brief Checks collisions at specified joint positions.
   /// @param q The joint positions.
@@ -64,7 +86,7 @@ public:
                               const double min_step_size);
 
   /// @brief Prints basic information about the scene.
-  void print();
+  friend std::ostream& operator<<(std::ostream& os, const Scene& scene);
 
 private:
   /// @brief The name of the scene.
