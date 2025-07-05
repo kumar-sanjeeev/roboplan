@@ -83,6 +83,7 @@ NB_MODULE(roboplan, m) {
            "max_samples"_a = 1000)
       .def("hasCollisions", &Scene::hasCollisions)
       .def("hasCollisionsAlongPath", &Scene::hasCollisionsAlongPath)
+      .def("isValidPose", &Scene::isValidPose)
       .def("__repr__", [](const Scene& scene) {
         std::stringstream ss;
         ss << scene;
@@ -117,7 +118,8 @@ NB_MODULE(roboplan, m) {
       .def_rw("max_nodes", &RRTOptions::max_nodes)
       .def_rw("max_connection_distance", &RRTOptions::max_connection_distance)
       .def_rw("collision_check_step_size", &RRTOptions::collision_check_step_size)
-      .def_rw("goal_biasing_probability", &RRTOptions::goal_biasing_probability);
+      .def_rw("goal_biasing_probability", &RRTOptions::goal_biasing_probability)
+      .def_rw("max_planning_time", &RRTOptions::max_planning_time);
 
   nanobind::class_<RRT>(m_rrt, "RRT")
       .def(nanobind::init<const std::shared_ptr<Scene>, const RRTOptions&>())
