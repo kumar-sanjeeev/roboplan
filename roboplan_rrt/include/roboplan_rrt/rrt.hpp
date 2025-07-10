@@ -12,6 +12,7 @@
 namespace roboplan {
 
 using CombinedStateSpace = dynotree::Combined<double>;
+using KdTree = dynotree::KDTree<int, -1, 32, double, CombinedStateSpace>;
 
 struct RRTOptions {
   /// @brief The maximum number of nodes to sample.
@@ -30,6 +31,9 @@ struct RRTOptions {
   /// @brief The maximum amount of time to allow for planning, in seconds.
   /// @details If <= 0 then planning will never timeout.
   double max_planning_time = 0;
+
+  /// @brief If true, use the RRT-Connect algorithm to grow the search trees.
+  bool rrt_connect = false;
 };
 
 class RRT {
@@ -51,6 +55,39 @@ public:
   /// @param seed The seed to set.
   void setRngSeed(unsigned int seed);
 
+  /// @brief Initializes the search tree with the specified start pose.
+  /// @param tree Reference to an empty tree.
+  /// @param nodes Reference to the nodes vector.
+  /// @param q_init The first node to add to the tree.
+  /// @param max_size The maximum size of the tree.
+  void initialize_tree(KdTree& tree, std::vector<Node>& nodes, const Eigen::VectorXd& q_init,
+                       size_t max_size = 1000);
+
+  /// @brief Attempt to add a sampled node to the provided tree and node set.
+  /// @param tree The tree to grow.
+  /// @param nodes The set of sampled nodes so far.
+  /// @param q_sample Randomly sampled node to extend towards (or connect).
+  /// @return True if node(s) were added to the tree, false otherwise.
+  bool grow_tree(KdTree& tree, std::vector<Node>& nodes, const Eigen::VectorXd& q_sample);
+
+  /// @brief Attempts to connect the `target_tree` to the latest added node in `nodes`.
+  /// @details The "latest added node" refers to `nodes.back()`. The function will identify the
+  /// nearest node in the target_tree, and attempt to make a connection. If successful, will
+  /// return a path from the start node to the goal node.
+  /// @param nodes The list of source tree nodes, `nodes.back()` is the most recently added node.
+  /// @param target_tree The tree to connect to the nodes list.
+  /// @param target_nodes The nodes in the target tree.
+  /// @param grow_start_tree If true, the target_tree is the goal tree.
+  /// @return A completed path from the start to the goal node if it exists, otherwise none.
+  std::optional<JointPath> join_trees(const std::vector<Node>& nodes, const KdTree& target_tree,
+                                      const std::vector<Node>& target_nodes, bool grow_start_tree);
+
+  /// @brief Returns a path from the specified index to the first added node.
+  /// @param nodes The list of nodes in the tree.
+  /// @param end_node The index of the goal destination in the nodes list.
+  /// @return A JointPath between end_node and nodes[0].
+  JointPath get_path(const std::vector<Node>& nodes, const Node& end_node);
+
 private:
   /// @brief Runs the RRT extend operation from a start node to a goal node.
   /// @param q_start The start configuration.
@@ -68,12 +105,6 @@ private:
 
   /// @brief A state space for the k-d tree for nearest neighbor lookup.
   CombinedStateSpace state_space_;
-
-  /// @brief A k-d tree for nearest neighbor lookup.
-  dynotree::KDTree<int, -1, 32, double, CombinedStateSpace> kd_tree_;
-
-  /// @brief A list of sampled nodes.
-  std::vector<Node> nodes_;
 
   /// @brief A random number generator for the planner.
   std::mt19937 rng_gen_;
