@@ -5,13 +5,16 @@
 #include <nanobind/nanobind.h>
 #include <nanobind/stl/filesystem.h>
 #include <nanobind/stl/optional.h>
+#include <nanobind/stl/pair.h>
 #include <nanobind/stl/shared_ptr.h>
 #include <nanobind/stl/string.h>
 #include <nanobind/stl/vector.h>
 
+#include <roboplan/core/path_utils.hpp>
 #include <roboplan/core/scene.hpp>
 #include <roboplan/core/types.hpp>
 #include <roboplan_example_models/resources.hpp>
+#include <roboplan_rrt/graph.hpp>
 #include <roboplan_rrt/rrt.hpp>
 #include <roboplan_simple_ik/simple_ik.hpp>
 
@@ -82,13 +85,17 @@ NB_MODULE(roboplan, m) {
       .def("randomCollisionFreePositions", &Scene::randomCollisionFreePositions,
            "max_samples"_a = 1000)
       .def("hasCollisions", &Scene::hasCollisions)
-      .def("hasCollisionsAlongPath", &Scene::hasCollisionsAlongPath)
       .def("isValidPose", &Scene::isValidPose)
+      .def("interpolate", &Scene::interpolate)
+      .def("forwardKinematics", &Scene::forwardKinematics)
       .def("__repr__", [](const Scene& scene) {
         std::stringstream ss;
         ss << scene;
         return ss.str();
       });
+
+  m_core.def("computeFramePath", &computeFramePath);
+  m_core.def("hasCollisionsAlongPath", &hasCollisionsAlongPath);
 
   /// Examples module
   nanobind::module_ m_example_models = m.def_submodule("example_models", "Example models");
@@ -113,6 +120,11 @@ NB_MODULE(roboplan, m) {
   /// RRT module
   nanobind::module_ m_rrt = m.def_submodule("rrt", "RRT module");
 
+  nanobind::class_<Node>(m_rrt, "Node")
+      .def(nanobind::init<const Eigen::VectorXd&, int>())
+      .def_ro("config", &Node::config)
+      .def_ro("parent_id", &Node::parent_id);
+
   nanobind::class_<RRTOptions>(m_rrt, "RRTOptions")
       .def(nanobind::init<>())  // Default constructor
       .def_rw("max_nodes", &RRTOptions::max_nodes)
@@ -125,7 +137,8 @@ NB_MODULE(roboplan, m) {
   nanobind::class_<RRT>(m_rrt, "RRT")
       .def(nanobind::init<const std::shared_ptr<Scene>, const RRTOptions&>())
       .def("plan", &RRT::plan)
-      .def("setRngSeed", &RRT::setRngSeed);
+      .def("setRngSeed", &RRT::setRngSeed)
+      .def("getNodes", &RRT::getNodes);
 }
 
 }  // namespace roboplan

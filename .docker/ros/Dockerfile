@@ -22,8 +22,13 @@ RUN source /opt/ros/${ROS_DISTRO}/setup.bash \
     && colcon build --cmake-args -DBUILD_TESTING=ON
 
 # Install the Python bindings.
+# Also, since Pinocchio in ROS is built with Numpy 1.x, we must preserve this by pinning a bunch of other versions.
+# Note that these pins are ROS specific, and at odds with non-ROS workflows,
+# so we cannot put these as requirements in the `pyproject.toml`.
+# As/if this package matures, a possible solution is to apply patches for ROS release.
 WORKDIR /workspace/roboplan_ws/src/roboplan/bindings
 RUN source /opt/ros/${ROS_DISTRO}/setup.bash \
+    && pip3 install "numpy<2.0.0" typing_extensions==4.10.0 viser opencv-contrib-python-headless \
     && source /workspace/roboplan_ws/install/setup.bash \
     && pip3 install --no-build-isolation -ve .
 
