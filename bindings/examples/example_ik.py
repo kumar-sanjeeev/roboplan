@@ -60,7 +60,7 @@ if __name__ == "__main__":
         ).homogeneous
         start.positions = np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
         result = ik_solver.solveIk(goal, start, solution)
-        if result is not None:
+        if result:
             viz.display(solution.positions)
             start.positions = solution.positions
 
