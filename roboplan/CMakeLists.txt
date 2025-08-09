@@ -8,6 +8,7 @@ endif()
 # Find dependencies.
 find_package(Eigen3 REQUIRED)
 find_package(pinocchio REQUIRED)
+find_package(yaml-cpp REQUIRED)
 
 # Add libraries
 add_library(expected INTERFACE)
@@ -26,9 +27,15 @@ target_include_directories(roboplan PUBLIC
     $<INSTALL_INTERFACE:include>
 )
 target_link_libraries(roboplan
+    PUBLIC
     Eigen3::Eigen
     pinocchio::pinocchio
 )
+if (yaml-cpp_VERSION VERSION_LESS "0.8")  # for Ubuntu 22.04
+    target_link_libraries(roboplan PRIVATE yaml-cpp)
+else()
+    target_link_libraries(roboplan PRIVATE yaml-cpp::yaml-cpp)
+endif()
 set_property(TARGET roboplan PROPERTY CXX_STANDARD 20)
 
 install(
