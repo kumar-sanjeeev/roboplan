@@ -19,6 +19,7 @@
 #include <roboplan_rrt/graph.hpp>
 #include <roboplan_rrt/rrt.hpp>
 #include <roboplan_simple_ik/simple_ik.hpp>
+#include <roboplan_toppra/toppra.hpp>
 
 namespace roboplan {
 
@@ -90,7 +91,8 @@ NB_MODULE(roboplan, m) {
       .def(nanobind::init<>())  // Default constructor
       .def_rw("min_position", &JointLimits::min_position)
       .def_rw("max_position", &JointLimits::max_position)
-      .def_rw("max_velocity", &JointLimits::max_velocity);
+      .def_rw("max_velocity", &JointLimits::max_velocity)
+      .def_rw("max_acceleration", &JointLimits::max_acceleration);
 
   nanobind::class_<JointInfo>(m_core, "JointInfo")
       .def(nanobind::init<const JointType>())
@@ -106,6 +108,19 @@ NB_MODULE(roboplan, m) {
       .def("__repr__", [](const JointPath& path) {
         std::stringstream ss;
         ss << path;
+        return ss.str();
+      });
+
+  nanobind::class_<JointTrajectory>(m_core, "JointTrajectory")
+      .def(nanobind::init<>())  // Default constructor
+      .def_rw("joint_names", &JointTrajectory::joint_names)
+      .def_rw("times", &JointTrajectory::times)
+      .def_rw("positions", &JointTrajectory::positions)
+      .def_rw("velocities", &JointTrajectory::velocities)
+      .def_rw("accelerations", &JointTrajectory::accelerations)
+      .def("__repr__", [](const JointTrajectory& traj) {
+        std::stringstream ss;
+        ss << traj;
         return ss.str();
       });
 
@@ -182,6 +197,14 @@ NB_MODULE(roboplan, m) {
       .def("plan", unwrap_expected(&RRT::plan))
       .def("setRngSeed", &RRT::setRngSeed)
       .def("getNodes", &RRT::getNodes);
+
+  /// TOPP-RA module
+  nanobind::module_ m_toppra = m.def_submodule("toppra", "TOPP-RA module");
+
+  nanobind::class_<PathParameterizerTOPPRA>(m_toppra, "PathParameterizerTOPPRA")
+      .def(nanobind::init<const std::shared_ptr<Scene>>())
+      .def("generate", unwrap_expected(&PathParameterizerTOPPRA::generate), "path"_a, "dt"_a,
+           "velocity_scale"_a = 1.0, "acceleration_scale"_a = 1.0);
 }
 
 }  // namespace roboplan
