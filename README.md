@@ -53,7 +53,7 @@ First, clone this repo (including submodules) to a valid ROS 2 workspace.
 ```bash
 mkdir -p ~/roboplan_ws/src
 cd ~/roboplan_ws/src
-git clone --recursive https://github.com/sea-bass/roboplan.git
+git clone --recursive https://github.com/open-planning/roboplan.git
 ```
 
 Source your favorite ROS distro and compile the package.
@@ -80,7 +80,7 @@ See the [bindings README](bindings/README.md) for instructions on building the P
 Make sure to install [pixi](https://pixi.sh/latest/#installation).
 
 ```bash
-git clone https://github.com/sea-bass/roboplan.git
+git clone https://github.com/open-planning/roboplan.git
 cd roboplan
 # Build all packages
 pixi run build_all
