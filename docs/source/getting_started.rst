@@ -144,6 +144,7 @@ Now you should be able to run a basic example.
 At this point, you should also be able to use `roboplan` as a Python package!
 
 ::
+
     python3
     >>> import roboplan
 
