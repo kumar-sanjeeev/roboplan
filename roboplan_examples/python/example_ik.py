@@ -19,8 +19,8 @@ def main(
     model: str = "ur5",
     max_iters: int = 100,
     step_size: float = 0.25,
-    max_linear_error: float = 0.001,
-    max_angular_error: float = 0.001,
+    max_linear_error_norm: float = 0.001,
+    max_angular_error_norm: float = 0.001,
     check_collisions: bool = True,
     host: str = "localhost",
     port: str = "8000",
@@ -80,8 +80,8 @@ def main(
         group_name=model_data.default_joint_group,
         max_iters=max_iters,
         step_size=step_size,
-        max_linear_error_norm=max_linear_error,
-        max_angular_error_norm=max_angular_error,
+        max_linear_error_norm=max_linear_error_norm,
+        max_angular_error_norm=max_angular_error_norm,
         check_collisions=check_collisions,
     )
     ik_solver = SimpleIk(scene, options)
