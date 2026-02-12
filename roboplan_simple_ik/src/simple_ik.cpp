@@ -83,14 +83,12 @@ bool SimpleIk::solveIk(const std::vector<CartesianConfiguration>& goals,
             full_jacobian_(Eigen::placeholders::all, v_indices);
       }
 
-      // Check for convergence, ensure every target frame meets both
-      // its linear and angular error tolerances
+      // Ensure every target frame meets both linear and angular error tolerances.
       bool converged = true;
       for (size_t idx = 0; idx < n_frames; ++idx) {
         const auto target_frame_error = error_.segment(idx * 6, 6);
-        double linear_error = target_frame_error.head<3>().norm();
-        double angular_error = target_frame_error.tail<3>().norm();
-
+        const auto linear_error = target_frame_error.head<3>().norm();
+        const auto angular_error = target_frame_error.tail<3>().norm();
         if (linear_error > options_.max_linear_error_norm ||
             angular_error > options_.max_angular_error_norm) {
           converged = false;
