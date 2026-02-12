@@ -28,10 +28,10 @@ struct SimpleIkOptions {
   /// @brief Damping value for the Jacobian pseudoinverse.
   double damping = 0.001;
 
-  /// @brief The maximum linear error norm.
+  /// @brief The maximum linear error norm, in meters.
   double max_linear_error_norm = 0.001;
 
-  /// @brief The maximum angular error norm.
+  /// @brief The maximum angular error norm, in radians.
   double max_angular_error_norm = 0.001;
 
   /// @brief Whether to check collisions.

@@ -29,9 +29,9 @@ void init_simple_ik(nanobind::module_& m) {
       .def_rw("step_size", &SimpleIkOptions::step_size, "The integration step for the solver.")
       .def_rw("damping", &SimpleIkOptions::damping, "Damping value for the Jacobian pseudoinverse.")
       .def_rw("max_linear_error_norm", &SimpleIkOptions::max_linear_error_norm,
-              "The maximum linear error norm.")
+              "The maximum linear error norm, in meters.")
       .def_rw("max_angular_error_norm", &SimpleIkOptions::max_angular_error_norm,
-              "The maximum angular error norm.")
+              "The maximum angular error norm, in radians.")
       .def_rw("check_collisions", &SimpleIkOptions::check_collisions,
               "Whether to check collisions.");
 
