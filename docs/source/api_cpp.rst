@@ -13,6 +13,12 @@ Simple IK
 .. autodoxygenindex::
     :project: roboplan_simple_ik
 
+Oink
+----
+
+.. autodoxygenindex::
+    :project: roboplan_oink
+
 RRT
 ---
 
