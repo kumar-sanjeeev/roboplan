@@ -13,7 +13,7 @@ Simple IK
 .. autodoxygenindex::
     :project: roboplan_simple_ik
 
-Oink
+Optimal IK (OInK)
 ----
 
 .. autodoxygenindex::
